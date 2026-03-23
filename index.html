@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>FactChat</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .chat {
+      width: 350px;
+      background: #1e293b;
+      border-radius: 10px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .messages {
+      height: 300px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+
+    .msg {
+      padding: 8px;
+      margin: 5px 0;
+      border-radius: 8px;
+    }
+
+    .user {
+      background: #3b82f6;
+      text-align: right;
+    }
+
+    .bot {
+      background: #10b981;
+      text-align: left;
+    }
+
+    input, button {
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      margin-top: 5px;
+    }
+
+    button {
+      background: #3b82f6;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat">
+  <h3>💬 FactChat</h3>
+
+  <div class="messages" id="messages"></div>
+
+  <input id="input" placeholder="Digite algo..." />
+  
+  <select id="category">
+    <option value="">Aleatório</option>
+    <option value="ciencia">Ciência</option>
+    <option value="tecnologia">Tecnologia</option>
+    <option value="historia">História</option>
+  </select>
+
+  <button onclick="sendMessage()">Enviar</button>
+</div>
+
+<script>
+  const API = "";
+
+  async function sendMessage() {
+    const input = document.getElementById("input");
+    const category = document.getElementById("category").value;
+    const text = input.value;
+
+    if (!text) return;
+
+    addMessage(text, "user");
+
+    input.value = "";
+
+    const res = await fetch(API + "/api/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ text, category })
+    });
+
+    const data = await res.json();
+
+    addMessage(data.botMessage.text, "bot");
+  }
+
+  function addMessage(text, type) {
+    const messages = document.getElementById("messages");
+
+    const div = document.createElement("div");
+    div.classList.add("msg", type);
+    div.innerText = text;
+
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+</script>
+
+</body>
+</html>
